@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inabikari - Restaurant Management System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Noto+Serif:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#150d2b; --dusk:#2a1654; --violet:#5b3a9e; --orchid:#9b6fe0;
+  --sakura:#f0b6e3; --gold:#e3b85c; --vermilion:#d9503f; --jade:#46c2ae;
+  --parchment:#f3e9d6; --panel:rgba(34,19,70,.88);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;min-height:100vh;color:var(--parchment);
+  font-family:'Noto Serif',Georgia,serif;line-height:1.6;
+  background:linear-gradient(180deg,#3b1f7a 0,#2a1654 380px,var(--night) 900px) fixed;}
+h1,h2,h3,th,button,label{font-family:'Cinzel','Trajan Pro',Georgia,serif}
+
+.hero{position:relative;overflow:hidden;text-align:center;padding:70px 20px 150px;
+  background:
+   radial-gradient(ellipse at 50% 120%,rgba(227,120,60,.75),transparent 60%),
+   linear-gradient(180deg,#24104d 0,#5b3a9e 55%,#c46a8a 100%);}
+.moon{position:absolute;top:34px;right:12%;width:70px;height:70px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#fff7e0,#f0d9a0);box-shadow:0 0 50px 12px rgba(240,217,160,.4)}
+.hero h1{margin:0;font-size:clamp(2rem,6vw,3.6rem);letter-spacing:.08em;color:var(--gold);
+  text-shadow:0 0 22px rgba(155,111,224,.9),0 2px 0 #1b0b3a}
+.hero p{margin:8px 0 0;color:var(--sakura);font-size:1.05rem;letter-spacing:.04em}
+.skyline{position:absolute;left:0;right:0;bottom:-1px;width:100%;height:130px}
+.lantern{position:absolute;top:0;width:34px;height:46px;border-radius:10px 10px 14px 14px;
+  background:radial-gradient(circle at 50% 40%,#ffd88a,var(--vermilion));
+  box-shadow:0 0 28px 8px rgba(255,170,80,.55);animation:glow 3.2s ease-in-out infinite alternate}
+.lantern::before{content:"";position:absolute;left:50%;top:-30px;width:2px;height:30px;background:var(--gold)}
+.lantern.l1{left:9%} .lantern.l2{left:15%;animation-delay:.8s;transform:scaleY(.85)}
+.lantern.l3{right:9%} .lantern.l4{right:15%;animation-delay:.8s;transform:scaleY(.85)}
+@keyframes glow{from{filter:brightness(.85)}to{filter:brightness(1.25)}}
+.petal{position:absolute;top:-20px;width:10px;height:14px;border-radius:70% 0 70% 0;
+  background:var(--sakura);opacity:.8;animation:fall linear infinite}
+@keyframes fall{to{transform:translate(60px,520px) rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.lantern,.petal{animation:none}}
+
+.container{max-width:1080px;margin:-90px auto 60px;padding:0 18px;position:relative}
+.panel{position:relative;background:var(--panel);border:1px solid var(--gold);border-radius:6px;
+  padding:26px;margin-bottom:34px;box-shadow:0 12px 40px rgba(10,4,30,.6),inset 0 0 0 4px rgba(227,184,92,.12)}
+.panel::before,.panel::after{content:"";position:absolute;width:12px;height:12px;background:var(--gold);transform:rotate(45deg)}
+.panel::before{top:-7px;left:-7px} .panel::after{bottom:-7px;right:-7px}
+.panel h2{margin:0 0 18px;font-size:1.4rem;color:var(--gold);letter-spacing:.05em}
+.panel h2 span{display:block;width:90px;height:2px;margin-top:8px;
+  background:linear-gradient(90deg,var(--gold),transparent)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+label{display:block;margin-bottom:5px;font-size:.85rem;color:var(--sakura);letter-spacing:.06em}
+input{width:100%;padding:10px 12px;color:var(--parchment);font:inherit;
+  background:rgba(12,6,32,.7);border:1px solid var(--violet);border-radius:4px}
+input::placeholder{color:#8f7cb8}
+input:focus,button:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-color:var(--gold)}
+.actions{margin-top:20px;display:flex;gap:12px;flex-wrap:wrap}
+button{cursor:pointer;border:1px solid var(--gold);border-radius:4px;padding:10px 20px;
+  font-size:.9rem;letter-spacing:.06em;color:#2a1654;font-weight:700;
+  background:linear-gradient(180deg,#f3d58b,var(--gold));transition:transform .15s,box-shadow .15s}
+button:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(227,184,92,.45)}
+button.ghost{background:transparent;color:var(--gold)}
+button.edit{background:linear-gradient(180deg,#b895f5,var(--orchid));border-color:var(--orchid);color:#1a0b3a;padding:6px 14px}
+button.delete{background:linear-gradient(180deg,#ec7565,var(--vermilion));border-color:var(--vermilion);color:#fff;padding:6px 14px}
+#editBanner{display:none;margin-bottom:16px;padding:8px 12px;border-left:3px solid var(--jade);
+  background:rgba(70,194,174,.12);color:var(--jade)}
+
+.toolbar{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+.toolbar input{max-width:320px}
+.tablewrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:760px}
+th{padding:12px;text-align:left;font-size:.85rem;letter-spacing:.08em;color:var(--gold);
+  background:rgba(91,58,158,.45);border-bottom:2px solid var(--gold)}
+td{padding:12px;border-bottom:1px solid rgba(155,111,224,.3);vertical-align:middle}
+tr:hover td{background:rgba(155,111,224,.14)}
+td.btns{white-space:nowrap}
+td.btns button+button{margin-left:6px}
+.tag{display:inline-block;padding:2px 10px;border-radius:999px;font-size:.8rem;border:1px solid}
+.tag.jp{color:var(--sakura);border-color:var(--sakura)}
+.tag.cn{color:var(--gold);border-color:var(--gold)}
+.tag.other{color:var(--jade);border-color:var(--jade)}
+.star{color:var(--gold)}
+.empty{text-align:center;padding:30px;color:#a894d0}
+
+#toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,30px);opacity:0;pointer-events:none;
+  padding:12px 22px;border:1px solid var(--gold);border-radius:4px;background:var(--night);
+  color:var(--parchment);transition:.3s;z-index:10}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+#toast.error{border-color:var(--vermilion);color:#ffb3a8}
+footer{text-align:center;padding:0 0 30px;color:#a894d0;font-size:.85rem}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="moon"></div>
+  <div class="lantern l1"></div><div class="lantern l2"></div>
+  <div class="lantern l3"></div><div class="lantern l4"></div>
+  <h1>Inabikari</h1>
+  <p>Restaurant Management System &mdash; Japanese &amp; Chinese Kitchens</p>
+  <svg class="skyline" viewBox="0 0 1200 130" preserveAspectRatio="none" aria-hidden="true">
+    <path fill="#150d2b" d="M0 130V95l60-18 40 20 50-45 40 45 60-25 60 20V60l30-10 30 10v40l60-15 50 25 70-35 40 30 60-10 70 25V80l30-35 30 35v25l70-20 60 25 60-30 50 35 70-20 70 25V90l40-15 40 15v40z"/>
+    <path fill="#150d2b" d="M880 130V70h-30l-10-14h140l-10 14h-30v60zM900 56l-12-16h64l-12 16zM912 40l-8-14h40l-8 14z"/>
+    <path fill="#150d2b" d="M180 130V60h-40V48h160v12h-40v70h-14V74h-52v56z"/>
+  </svg>
+</header>
+
+<main class="container">
+  <form id="restaurantForm" class="panel" novalidate>
+    <h2 id="formTitle">Add Restaurant<span></span></h2>
+    <div id="editBanner"></div>
+    <input type="hidden" id="docId">
+    <div class="grid">
+      <div><label for="restaurant_id">Restaurant ID</label>
+        <input type="number" id="restaurant_id" min="1" required placeholder="e.g. 4"></div>
+      <div><label for="name">Restaurant Name</label>
+        <input type="text" id="name" required placeholder="e.g. Inabikari"></div>
+      <div><label for="cuisine">Cuisine Type</label>
+        <input type="text" id="cuisine" required placeholder="e.g. Japanese &amp; Chinese"></div>
+      <div><label for="address">Address</label>
+        <input type="text" id="address" required placeholder="e.g. Angeles City"></div>
+      <div><label for="rating">Rating (0 to 5)</label>
+        <input type="number" step="0.1" id="rating" min="0" max="5" required placeholder="e.g. 4.7"></div>
+      <div><label for="contact">Contact Number</label>
+        <input type="text" id="contact" required placeholder="e.g. 09171234570"></div>
+    </div>
+    <div class="actions">
+      <button type="submit" id="saveBtn">Save record</button>
+      <button type="button" class="ghost" id="cancelBtn">Clear form</button>
+    </div>
+  </form>
+
+  <section class="panel">
+    <div class="toolbar">
+      <h2 style="margin:0">Restaurant Directory<span></span></h2>
+      <div style="flex:1;max-width:320px">
+        <label for="search">Search by name, cuisine or address</label>
+        <input type="search" id="search" placeholder="e.g. Japanese">
+      </div>
+    </div>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>ID</th><th>Name</th><th>Cuisine</th><th>Address</th><th>Rating</th><th>Contact</th><th>Actions</th></tr></thead>
+        <tbody id="restaurantTableBody"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+<footer>Inabikari &middot; 6ADDBASE &middot; WD-303</footer>
+<div id="toast" role="status"></div>
+
+<script>
+const API_URL = '/api/restaurants';
+let records = [];
+
+const $ = id => document.getElementById(id);
+const fields = ['restaurant_id','name','cuisine','address','rating','contact'];
+
+function toast(msg, isError){
+  const t = $('toast'); t.textContent = msg;
+  t.className = 'show' + (isError ? ' error' : '');
+  clearTimeout(toast.timer); toast.timer = setTimeout(() => t.className = '', 2600);
+}
+
+function cuisineClass(c){
+  c = (c || '').toLowerCase();
+  if (c.includes('japan')) return 'jp';
+  if (c.includes('chin')) return 'cn';
+  return 'other';
+}
+
+async function fetchRestaurants(){
+  const q = $('search').value.trim();
+  try {
+    const res = await fetch(API_URL + (q ? '?search=' + encodeURIComponent(q) : ''));
+    if (!res.ok) throw new Error((await res.json()).error || 'Could not load records');
+    records = await res.json();
+    render();
+  } catch (err) { toast(err.message, true); }
+}
+
+function render(){
+  const tbody = $('restaurantTableBody');
+  tbody.innerHTML = '';
+  if (!records.length){
+    tbody.innerHTML = '<tr><td colspan="7" class="empty">No restaurants found. Add one using the form above.</td></tr>';
+    return;
+  }
+  records.forEach(item => {
+    const tr = document.createElement('tr');
+    const cells = [item.restaurant_id, item.name, null, item.address, null, item.contact];
+    cells.forEach((val, i) => {
+      const td = document.createElement('td');
+      if (i === 2){
+        const s = document.createElement('span');
+        s.className = 'tag ' + cuisineClass(item.cuisine); s.textContent = item.cuisine; td.appendChild(s);
+      } else if (i === 4){
+        td.innerHTML = '<span class="star">&#9733;</span> ';
+        td.append(Number(item.rating).toFixed(1));
+      } else td.textContent = val;
+      tr.appendChild(td);
+    });
+    const act = document.createElement('td'); act.className = 'btns';
+    const e = document.createElement('button'); e.className = 'edit'; e.textContent = 'Edit';
+    e.onclick = () => editRecord(item._id);
+    const d = document.createElement('button'); d.className = 'delete'; d.textContent = 'Delete';
+    d.onclick = () => deleteRecord(item._id, item.name);
+    act.append(e, d); tr.appendChild(act); tbody.appendChild(tr);
+  });
+}
+
+function resetForm(){
+  $('restaurantForm').reset(); $('docId').value = '';
+  $('formTitle').firstChild.textContent = 'Add Restaurant';
+  $('editBanner').style.display = 'none';
+  $('saveBtn').textContent = 'Save record';
+}
+
+$('restaurantForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  if (!e.target.checkValidity()){ e.target.reportValidity(); return; }
+  const id = $('docId').value;
+  const payload = {
+    restaurant_id: Number($('restaurant_id').value),
+    name: $('name').value.trim(),
+    cuisine: $('cuisine').value.trim(),
+    address: $('address').value.trim(),
+    rating: Number($('rating').value),
+    contact: $('contact').value.trim()
+  };
+  try {
+    const res = await fetch(id ? `${API_URL}/${id}` : API_URL, {
+      method: id ? 'PUT' : 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    });
+    const body = await res.json();
+    if (!res.ok) throw new Error(body.error || 'Request failed');
+    toast(id ? 'Restaurant updated' : 'Restaurant added');
+    resetForm(); fetchRestaurants();
+  } catch (err) { toast(err.message, true); }
+});
+
+function editRecord(id){
+  const item = records.find(r => r._id === id); if (!item) return;
+  $('docId').value = id;
+  fields.forEach(f => $(f).value = item[f]);
+  $('formTitle').firstChild.textContent = 'Edit Restaurant';
+  $('editBanner').textContent = 'Editing: ' + item.name;
+  $('editBanner').style.display = 'block';
+  $('saveBtn').textContent = 'Update record';
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+async function deleteRecord(id, name){
+  if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
+  try {
+    const res = await fetch(`${API_URL}/${id}`, {method:'DELETE'});
+    const body = await res.json();
+    if (!res.ok) throw new Error(body.error || 'Delete failed');
+    toast('Restaurant deleted');
+    if ($('docId').value === id) resetForm();
+    fetchRestaurants();
+  } catch (err) { toast(err.message, true); }
+}
+
+$('cancelBtn').addEventListener('click', resetForm);
+let searchTimer;
+$('search').addEventListener('input', () => { clearTimeout(searchTimer); searchTimer = setTimeout(fetchRestaurants, 250); });
+
+if (!matchMedia('(prefers-reduced-motion: reduce)').matches){
+  const hero = document.querySelector('.hero');
+  for (let i = 0; i < 14; i++){
+    const p = document.createElement('span'); p.className = 'petal';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDuration = 8 + Math.random() * 8 + 's';
+    p.style.animationDelay = -Math.random() * 12 + 's';
+    hero.appendChild(p);
+  }
+}
+fetchRestaurants();
+</script>
+</body>
+</html>
